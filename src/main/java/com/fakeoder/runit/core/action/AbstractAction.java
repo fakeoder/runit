@@ -16,32 +16,7 @@ public abstract class AbstractAction<T> {
      * @return T
      */
     public T execute() {
-
-        //pre action is async
-        if(!pre.isSync()){
-
-            //curr is sync
-            if(isSync()){
-
-                //exec curr action
-                doExecute();
-
-                //trigger pre callback
-                pre.onFinished();
-
-                //call next action
-                next.doExecute();
-
-            } else{
-                doExecuteAsync();
-            }
-            return null;
-        }
-
-        doExecute();
-
-        //sync next call
-        next.doExecute();
+        //TODO call doExecute
         return null;
     }
 
@@ -56,12 +31,6 @@ public abstract class AbstractAction<T> {
      * @return
      */
     abstract T doExecuteAsync();
-
-    /**
-     * if action is finished
-     * @return
-     */
-    abstract boolean isFinished();
 
     /**
      * if action is sync

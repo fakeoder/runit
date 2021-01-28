@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<task name="" description="">
+    <actions>
+        <action id="" preCondition="and/or" timeout="">
+            <initDataProcessor id="">
+                <script type="javascript">
+                    return value
+                </script>
+            </initDataProcessor>
+            <timeoutProcessor id=""></timeoutProcessor>
+            <exceptionProcessor id=""></exceptionProcessor>
+        </action>
+    </actions>
+    <flows>
+        <flow id="" from="" to="">
+            <condition eval=""></condition>
+        </flow>
+    </flows>
+</task>
