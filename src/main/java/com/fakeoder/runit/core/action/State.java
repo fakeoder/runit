@@ -5,5 +5,8 @@ package com.fakeoder.runit.core.action;
  * @author zhuo
  */
 public enum State {
-    NOT_START,RUNNING,FINISHED,ERROR;
+    NOT_START,
+    RUNNING,
+    FINISHED,
+    ERROR;
 }
