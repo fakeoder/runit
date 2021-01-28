@@ -16,6 +16,11 @@ public abstract class AbstractAction {
     protected String id;
 
     /**
+     * action result
+     */
+    protected ActionResult actionResult;
+
+    /**
      * action state
      * @see com.fakeoder.runit.core.action.State
      */
