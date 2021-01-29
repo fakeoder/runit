@@ -30,7 +30,7 @@ public abstract class AbstractAction {
      * pre actions result condition to know how to run this action
      * @see com.fakeoder.runit.core.action.PreCondition
      */
-    protected String preCondition;
+    protected PreCondition preCondition;
 
     /**
      * timeout
@@ -80,11 +80,11 @@ public abstract class AbstractAction {
         this.state = state;
     }
 
-    public String getPreCondition() {
+    public PreCondition getPreCondition() {
         return preCondition;
     }
 
-    public void setPreCondition(String preCondition) {
+    public void setPreCondition(PreCondition preCondition) {
         this.preCondition = preCondition;
     }
 
@@ -118,5 +118,13 @@ public abstract class AbstractAction {
 
     public void setExceptionProcessor(AbstractExceptionProcessor exceptionProcessor) {
         this.exceptionProcessor = exceptionProcessor;
+    }
+
+    public ActionResult getActionResult() {
+        return actionResult;
+    }
+
+    public void setActionResult(ActionResult actionResult) {
+        this.actionResult = actionResult;
     }
 }

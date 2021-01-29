@@ -1,5 +1,6 @@
 package com.fakeoder.runit.core.arrange;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fakeoder.runit.core.action.ActionResult;
 
 import java.util.List;
@@ -35,4 +36,34 @@ public abstract class AbstractArranger {
         return null;
     }
 
+    /**
+     * get arrange rule by from and to actions
+     * @param from
+     * @param to
+     * @return
+     */
+    public ArrangerRule getArrangeRule(String from,String to){
+        String key = String.join(from,to,"-");
+        return null;
+    }
+
+    /**
+     * judge if result can pass th rule
+     * @param result
+     * @return
+     */
+    public boolean canArrangePass(String from, String to, String result){
+        ArrangerRule arrangerRule = getArrangeRule(from,to);
+        //TODO condition build to a class
+        String condition = arrangerRule.getPassCondition();
+
+        JSONObject resJson = JSONObject.parseObject(result);
+
+
+        return false;
+    }
+
+    public List<ArrangerRule> getArrangeRulesByPre(String preId){
+        return arrangeMap.getArrangeRulesByPre(preId);
+    }
 }
