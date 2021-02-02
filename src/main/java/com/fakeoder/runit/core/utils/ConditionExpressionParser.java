@@ -53,8 +53,8 @@ public class ConditionExpressionParser {
                                     stackExp.push(rc);
                                 }
                             }else {
-                                stackOpe.push(exp);
                                 stackCalc(stackExp,stackOpe);
+                                stackOpe.push(exp);
                             }
                         }
                     }
@@ -88,7 +88,6 @@ public class ConditionExpressionParser {
         private static char calc(char p1, char p2, char pop) {
             int c1 = Integer.parseInt(p1+"");
             int c2 = Integer.parseInt(p2+"");
-
             switch (pop){
                 case '|':
                     return c1+c2==0?'0':'1';
@@ -100,7 +99,7 @@ public class ConditionExpressionParser {
     }
 
     public static void main(String[] args) {
-        String expression = "1&0|(1&(0|1&1))";
+        String expression = "1&0|(1&(0|1&1))|0";
         boolean rsl = BooleanExpressionCalculator.calcExpression(expression);
         System.out.println("expression:["+expression+"], result is:"+rsl);
     }
