@@ -16,6 +16,14 @@ public class JSONConditionExpression {
 
 
     public static void main(String[] args) {
+
+
+        String expression = "1&0|(1&(0|1&1))";
+        System.out.println("result is :"+expression(expression));
+
+    }
+    
+    static boolean expression(String expression){
         Map<Character,Integer> map = new HashMap();
         map.put(')',-1);
         map.put('|',0);
@@ -23,46 +31,71 @@ public class JSONConditionExpression {
         map.put('(',2);
 
 
-        String expression = "1&0|(1&(0|1&1))";
-
-        Stack<Character> stack_exp = new Stack();
-        Stack<Character> stack_ope = new Stack();
+        Stack<Character> stackExp = new Stack();
+        Stack<Character> stackOpe = new Stack();
 
         for(char exp : expression.toCharArray()){
             if(exp=='0'||exp=='1'){
-                stack_exp.push(exp);
+                stackExp.push(exp);
             }else{
-                if(stack_ope.isEmpty()){
-                    stack_ope.push(exp);
+                if(stackOpe.isEmpty()){
+                    stackOpe.push(exp);
                 }else{
-                    Character c = stack_ope.peek();
-                    if(map.get(exp)<map.get(c)){
-                        stack_ope.push(exp);
+                    Character c = stackOpe.peek();
+                    if(map.get(exp)>map.get(c)||c=='('){
+                        stackOpe.push(exp);
                     }else{
                         if(exp==')'){
                             char op;
-                            while((op=stack_ope.pop())!='('){
-                                if(stack_exp.isEmpty()){
-                                    return;
-                                }
-                                char p1 = stack_exp.pop();
-                                char p2 = stack_exp.pop();
-                                calc(p1,p2,op);
+                            while((op=stackOpe.pop())!='('){
+                                char p1 = stackExp.pop();
+                                char p2 = stackExp.pop();
+                                char rc = calc(p1,p2,op);
+                                stackExp.push(rc);
                             }
+                        }else {
+                            stackOpe.push(exp);
+                            stackCalc(stackExp,stackOpe);
                         }
-
-                        char p1 = stack_exp.pop();
-                        char p2 = stack_exp.pop();
-                        calc(p1,p2,stack_ope.pop());
                     }
                 }
             }
         }
-
-
+        while(!stackOpe.isEmpty()){
+            stackCalc(stackExp,stackOpe);
+        }
+        return stackExp.pop()=='1';
     }
 
-    private static void calc(char p1, char p2, Character pop) {
-        System.out.println(p1+pop+p2);
+
+    /**
+     * pop 2 expression and pop 1 operation
+     * @param stackExp expression stack
+     * @param stackOpe operation stack
+     */
+    public static void stackCalc(Stack<Character> stackExp, Stack<Character> stackOpe){
+        char p1 = stackExp.pop();
+        char p2 = stackExp.pop();
+        char rc = calc(p1, p2, stackOpe.pop());
+        stackExp.push(rc);
+    }
+
+    /**
+     * calc boolean expression
+     * @param p1 '0' or '1'
+     * @param p2 '0' or '1'
+     * @param pop '&' or '|'
+     * @return
+     */
+    private static char calc(char p1, char p2, char pop) {
+        int c1 = Integer.parseInt(p1+"");
+        int c2 = Integer.parseInt(p2+"");
+
+        switch (pop){
+            case '|':
+                return c1+c2==0?'0':'1';
+            default:
+                return c1*c2==0?'0':'1';
+        }
     }
 }
