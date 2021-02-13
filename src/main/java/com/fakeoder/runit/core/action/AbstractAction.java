@@ -1,8 +1,8 @@
 package com.fakeoder.runit.core.action;
 
-import com.fakeoder.runit.core.processor.AbstractExceptionProcessor;
-import com.fakeoder.runit.core.processor.AbstractInitDataProcessor;
-import com.fakeoder.runit.core.processor.AbstractTimeoutProcessor;
+import com.fakeoder.runit.core.processor.ExceptionProcessor;
+import com.fakeoder.runit.core.processor.InitDataProcessor;
+import com.fakeoder.runit.core.processor.TimeoutProcessor;
 
 /**
  * abstract action define
@@ -14,6 +14,11 @@ public abstract class AbstractAction {
      * action id
      */
     protected String id;
+
+    /**
+     * params
+     */
+    protected String params;
 
     /**
      * action result
@@ -40,17 +45,17 @@ public abstract class AbstractAction {
     /**
      * required parameters init processor
      */
-    protected AbstractInitDataProcessor initDataProcessor;
+    protected InitDataProcessor initDataProcessor;
 
     /**
      * what should do when timeout
      */
-    protected AbstractTimeoutProcessor timeoutProcessor;
+    protected TimeoutProcessor timeoutProcessor;
 
     /**
      * what should do when exception appears
      */
-    protected AbstractExceptionProcessor exceptionProcessor;
+    protected ExceptionProcessor exceptionProcessor;
 
 
 
@@ -59,10 +64,7 @@ public abstract class AbstractAction {
      * @return JSON String
      * @throws Exception
      */
-    public ActionResult run() throws Exception {
-
-        return null;
-    }
+    public abstract ActionResult run();
 
     public String getId() {
         return id;
@@ -70,6 +72,14 @@ public abstract class AbstractAction {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
     }
 
     public State getState() {
@@ -96,27 +106,27 @@ public abstract class AbstractAction {
         this.timeout = timeout;
     }
 
-    public AbstractInitDataProcessor getInitDataProcessor() {
+    public InitDataProcessor getInitDataProcessor() {
         return initDataProcessor;
     }
 
-    public void setInitDataProcessor(AbstractInitDataProcessor initDataProcessor) {
+    public void setInitDataProcessor(InitDataProcessor initDataProcessor) {
         this.initDataProcessor = initDataProcessor;
     }
 
-    public AbstractTimeoutProcessor getTimeoutProcessor() {
+    public TimeoutProcessor getTimeoutProcessor() {
         return timeoutProcessor;
     }
 
-    public void setTimeoutProcessor(AbstractTimeoutProcessor timeoutProcessor) {
+    public void setTimeoutProcessor(TimeoutProcessor timeoutProcessor) {
         this.timeoutProcessor = timeoutProcessor;
     }
 
-    public AbstractExceptionProcessor getExceptionProcessor() {
+    public ExceptionProcessor getExceptionProcessor() {
         return exceptionProcessor;
     }
 
-    public void setExceptionProcessor(AbstractExceptionProcessor exceptionProcessor) {
+    public void setExceptionProcessor(ExceptionProcessor exceptionProcessor) {
         this.exceptionProcessor = exceptionProcessor;
     }
 

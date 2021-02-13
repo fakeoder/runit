@@ -1,9 +1,9 @@
 package com.fakeoder.runit.core.arrange;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fakeoder.runit.core.action.ActionResult;
+import com.fakeoder.evall.core.Expression;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * arrange all actions to run with defined sequence
@@ -18,12 +18,11 @@ public abstract class AbstractArranger {
 
     /**
      * under the map, judge which action can be run
-     * @param result
+     * @param from
      * @return List<String> actions' id
      */
-    public List<String> getRunnableActionIds(ActionResult result){
-
-        return null;
+    public List<String> getRunnableActionIds(String from){
+        return arrangeMap.getRunnableActionIds(from);
     }
 
     /**
@@ -32,8 +31,7 @@ public abstract class AbstractArranger {
      * @return List<String> actions' id
      */
     public List<String> getPreActionIds(String id){
-
-        return null;
+        return arrangeMap.getPreActionIds(id);
     }
 
     /**
@@ -44,25 +42,25 @@ public abstract class AbstractArranger {
      */
     public ArrangerRule getArrangeRule(String from,String to){
         String key = String.join(from,to,"-");
-        return null;
+        return arrangeMap.getArrangeRuleByKey(key);
     }
 
     /**
      * judge if result can pass th rule
-     * @param result
+     *
      * @return
      */
-    public boolean canArrangePass(String from, String to, String result){
+    public boolean canArrangePass(String from, String to, Map<String,Object> context){
         ArrangerRule arrangerRule = getArrangeRule(from,to);
-        //TODO condition build to a class
         String condition = arrangerRule.getPassCondition();
-
-        JSONObject resJson = JSONObject.parseObject(result);
-
-
-        return false;
+        Object result  = Expression.eval(condition,context);
+        return Boolean.valueOf(result.toString());
     }
 
+    /**
+     * @param preId
+     * @return
+     */
     public List<ArrangerRule> getArrangeRulesByPre(String preId){
         return arrangeMap.getArrangeRulesByPre(preId);
     }

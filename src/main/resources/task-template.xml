@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <task name="" description="">
     <actions>
-        <action id="" preCondition="and/or" timeout="">
-            <initDataProcessor id="">
-                <script type="javascript">
-                    return value
-                </script>
-            </initDataProcessor>
+        <action id="" preCondition="any" timeout="10" class="">
+            <initParameters>
+                <initParameter>
+                    <name></name>
+                    <type></type>
+                    <value></value>
+                </initParameter>
+                <initParameter>
+                    <name></name>
+                    <type></type>
+                    <value></value>
+                </initParameter>
+            </initParameters>
             <timeoutProcessor id=""></timeoutProcessor>
             <exceptionProcessor id=""></exceptionProcessor>
         </action>

@@ -7,6 +7,7 @@ import com.fakeoder.runit.core.action.PreCondition;
 import com.fakeoder.runit.core.action.State;
 import com.fakeoder.runit.core.arrange.AbstractArranger;
 import com.fakeoder.runit.core.arrange.ArrangerRule;
+import com.fakeoder.runit.core.arrange.impl.XmlArranger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,6 +20,11 @@ import java.util.concurrent.*;
  * @author zhuo
  */
 public abstract class ApplicationContext {
+    /**
+     * the context
+     */
+    private Map<String,Object> context;
+
     /**
      * the beginning action
      */
@@ -44,6 +50,7 @@ public abstract class ApplicationContext {
 
     private void init(){
         executor = new ThreadPoolExecutor(10, 20, 30, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+        arranger = XmlArranger.load("");
     }
 
     /**
@@ -85,26 +92,32 @@ public abstract class ApplicationContext {
             ActionResult result = null;
             try {
                 result = future.get();
+                //todo register result
+                register(result);
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             }
 
-            List<String> actionIds = arranger.getRunnableActionIds(result);
+            List<String> actionIds = arranger.getRunnableActionIds(id);
             for (String actionId : actionIds) {
                 process(actionId);
             }
         }
     }
 
+    /**
+     * register
+     * @param result
+     */
+    protected void register(ActionResult result){
+        context.put(result.getActionId(), JSONObject.parseObject(result.getResult()));
+    }
+
     public static void start(){
-        ApplicationContext context = new ApplicationContext() {
-            @Override
-            protected List<String> shouldCancelPreAction(String id, List<String> preIds) {
-                return null;
-            }
-        };
+        ApplicationContext context = new ApplicationContext(){};
         context.init();
         context.process("begin");
         System.out.println("task run finished!");
@@ -146,7 +159,7 @@ public abstract class ApplicationContext {
                 return false;
             }
             //if arrange condition pass
-            return arranger.canArrangePass(actionId.toString(),id,JSONObject.toJSONString(action.getActionResult()));
+            return arranger.canArrangePass(actionId.toString(),id, context);
         },this.actions);
 
         return true;
