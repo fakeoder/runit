@@ -1,13 +1,12 @@
 package com.fakeoder.runit.core.context;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fakeoder.runit.core.action.AbstractAction;
+import com.fakeoder.runit.core.action.Action;
 import com.fakeoder.runit.core.action.ActionResult;
 import com.fakeoder.runit.core.action.PreCondition;
 import com.fakeoder.runit.core.action.State;
-import com.fakeoder.runit.core.arrange.AbstractArranger;
+import com.fakeoder.runit.core.arrange.Arranger;
 import com.fakeoder.runit.core.arrange.ArrangerRule;
-import com.fakeoder.runit.core.arrange.impl.XmlArranger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,17 +27,17 @@ public abstract class ApplicationContext {
     /**
      * the beginning action
      */
-    private AbstractAction beginAction;
+    private Action beginAction;
 
     /**
      * actions map, key is action identified, value is action
      */
-    private ConcurrentHashMap<String,AbstractAction> actions;
+    private ConcurrentHashMap<String, Action> actions;
 
     /**
      * arranger
      */
-    private AbstractArranger arranger;
+    private Arranger arranger;
 
     /**
      * thread pool executor
@@ -50,7 +49,7 @@ public abstract class ApplicationContext {
 
     private void init(){
         executor = new ThreadPoolExecutor(10, 20, 30, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
-        arranger = XmlArranger.load("");
+
     }
 
     /**
@@ -58,7 +57,7 @@ public abstract class ApplicationContext {
      */
     void process(String id){
 
-        AbstractAction action;
+        Action action;
         if(id==null){
             id = beginAction.getId();
             action = beginAction;
@@ -154,7 +153,7 @@ public abstract class ApplicationContext {
      */
     protected boolean able2Run(PreCondition condition,String id, List<String> preActionIds){
         condition.judge(preActionIds,(actions,actionId)->{
-            AbstractAction action = ((Map<String,AbstractAction>)actions).get(actionId);
+            Action action = ((Map<String, Action>)actions).get(actionId);
             if(action.getState().getValue()<State.FINISHED.getValue()){
                 return false;
             }
@@ -170,13 +169,13 @@ public abstract class ApplicationContext {
     }
 
     static class ExecutorBuilder implements Callable{
-        private AbstractAction action;
+        private Action action;
 
-        public static ExecutorBuilder builder(AbstractAction action){
+        public static ExecutorBuilder builder(Action action){
             return new ExecutorBuilder(action);
         }
 
-        public ExecutorBuilder(AbstractAction action) {
+        public ExecutorBuilder(Action action) {
             this.action = action;
         }
 

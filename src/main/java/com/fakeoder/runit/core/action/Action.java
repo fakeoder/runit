@@ -8,7 +8,7 @@ import com.fakeoder.runit.core.processor.TimeoutProcessor;
  * abstract action define
  * @author zhuo
  */
-public abstract class AbstractAction {
+public class Action {
 
     /**
      * action id
@@ -64,7 +64,9 @@ public abstract class AbstractAction {
      * @return JSON String
      * @throws Exception
      */
-    public abstract ActionResult run();
+    public ActionResult run(){
+        throw new UnsupportedOperationException("not support!");
+    }
 
     public String getId() {
         return id;

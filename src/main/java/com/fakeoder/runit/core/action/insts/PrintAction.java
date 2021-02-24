@@ -1,9 +1,9 @@
 package com.fakeoder.runit.core.action.insts;
 
-import com.fakeoder.runit.core.action.AbstractAction;
+import com.fakeoder.runit.core.action.Action;
 import com.fakeoder.runit.core.action.ActionResult;
 
-public class PrintAction extends AbstractAction {
+public class PrintAction extends Action {
 
     @Override
     public ActionResult run() {

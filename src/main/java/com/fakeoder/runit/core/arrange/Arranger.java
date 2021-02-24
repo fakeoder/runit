@@ -9,12 +9,12 @@ import java.util.Map;
  * arrange all actions to run with defined sequence
  * @author zhuo
  */
-public abstract class AbstractArranger {
+public class Arranger {
 
     /**
      * the map to guide how to arrange
      */
-    private ArrangeMap arrangeMap;
+    protected ArrangeMap arrangeMap;
 
     /**
      * under the map, judge which action can be run

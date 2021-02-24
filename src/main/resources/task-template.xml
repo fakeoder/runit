@@ -1,26 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<task name="" description="">
+<task id="TASK-001" name="task template" description="this is a template">
+    <context>
+        <variable>
+            <key>profile</key>
+            <value>dev</value>
+        </variable>
+        <variable>
+            <key>timeout</key>
+            <value>10</value>
+        </variable>
+    </context>
     <actions>
-        <action id="" preCondition="any" timeout="10" class="">
+        <action id="sleepNone" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.inst.template.SleepNone">
+                <initParameters>
+                    <initParameter>
+                        <name>during</name>
+                        <expression>5</expression>
+                    </initParameter>
+                    <initParameter>
+                        <name>env</name>
+                        <expression>${profile}</expression>
+                    </initParameter>
+                </initParameters>
+                <timeoutProcessor class="<timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></timeoutProcessor>
+                <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></exceptionProcessor>"></timeoutProcessor>
+        </action>
+        <action id="sleepNeat" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.inst.template.SleepNeat">
             <initParameters>
                 <initParameter>
-                    <name></name>
-                    <type></type>
-                    <value></value>
+                    <name>times</name>
+                    <expression>${timeout}</expression>
                 </initParameter>
                 <initParameter>
-                    <name></name>
-                    <type></type>
-                    <value></value>
+                    <name>perSeconds</name>
+                    <expression>1</expression>
                 </initParameter>
             </initParameters>
-            <timeoutProcessor id=""></timeoutProcessor>
-            <exceptionProcessor id=""></exceptionProcessor>
+            <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></timeoutProcessor>
+            <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></exceptionProcessor>
         </action>
     </actions>
-    <flows>
-        <flow id="" from="" to="">
-            <condition eval=""></condition>
+    <arranger>
+        <flow id="sleepFlow" from="sleepNone" to="sleepNeat">
+            <condition expression="${sleepNone.result.next}==1"></condition>
         </flow>
-    </flows>
+    </arranger>
 </task>

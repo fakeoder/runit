@@ -1,54 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="task" type="taskType"/>
-  <xs:complexType name="scriptType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="type"/>
-      </xs:extension>
-    </xs:simpleContent>
-  </xs:complexType>
-  <xs:complexType name="initDataProcessorType">
+  <xs:complexType name="taskType">
     <xs:sequence>
-      <xs:element type="scriptType" name="script"/>
+      <xs:element type="contextType" name="context"/>
+      <xs:element type="actionsType" name="actions"/>
+      <xs:element type="arrangerType" name="arranger"/>
     </xs:sequence>
     <xs:attribute type="xs:string" name="id"/>
+    <xs:attribute type="xs:string" name="name"/>
+    <xs:attribute type="xs:string" name="description"/>
   </xs:complexType>
+  <xs:complexType name="contextType">
+    <xs:sequence>
+      <xs:element type="variableType" name="variable" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="variableType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="key"/>
+      <xs:element type="xs:string" name="value"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="actionsType">
+    <xs:sequence>
+      <xs:element type="actionType" name="action" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="actionType">
+    <xs:sequence>
+      <xs:element type="initParametersType" name="initParameters"/>
+      <xs:element type="timeoutProcessorType" name="timeoutProcessor"/>
+      <xs:element type="exceptionProcessorType" name="exceptionProcessor"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="required"/>
+    <xs:attribute type="xs:string" name="preCondition" use="required"/>
+    <xs:attribute type="xs:string" name="timeout" use="required"/>
+    <xs:attribute type="xs:string" name="class" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="initParametersType">
+    <xs:sequence>
+      <xs:element type="initParameterType" name="initParameter" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="initParameterType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="name"/>
+      <xs:element type="xs:string" name="expression"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="timeoutProcessorType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="id"/>
+        <xs:attribute type="xs:string" name="class" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
   <xs:complexType name="exceptionProcessorType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="id"/>
+        <xs:attribute type="xs:string" name="class" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  <xs:complexType name="actionType">
+
+  <xs:complexType name="arrangerType">
     <xs:sequence>
-      <xs:element type="initDataProcessorType" name="initDataProcessor"/>
-      <xs:element type="timeoutProcessorType" name="timeoutProcessor"/>
-      <xs:element type="exceptionProcessorType" name="exceptionProcessor"/>
+      <xs:element type="flowType" name="flow"/>
     </xs:sequence>
-    <xs:attribute type="xs:string" name="id"/>
-    <xs:attribute type="xs:string" name="preCondition"/>
-    <xs:attribute type="xs:string" name="timeout"/>
-  </xs:complexType>
-  <xs:complexType name="actionsType">
-    <xs:sequence>
-      <xs:element type="actionType" name="action"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="conditionType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
-        <xs:attribute type="xs:string" name="eval"/>
-      </xs:extension>
-    </xs:simpleContent>
   </xs:complexType>
   <xs:complexType name="flowType">
     <xs:sequence>
@@ -58,17 +81,14 @@
     <xs:attribute type="xs:string" name="from"/>
     <xs:attribute type="xs:string" name="to"/>
   </xs:complexType>
-  <xs:complexType name="flowsType">
-    <xs:sequence>
-      <xs:element type="flowType" name="flow"/>
-    </xs:sequence>
+  <xs:complexType name="conditionType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="expression"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
-  <xs:complexType name="taskType">
-    <xs:sequence>
-      <xs:element type="actionsType" name="actions"/>
-      <xs:element type="flowsType" name="flows"/>
-    </xs:sequence>
-    <xs:attribute type="xs:string" name="name"/>
-    <xs:attribute type="xs:string" name="description"/>
-  </xs:complexType>
+
+
+
 </xs:schema>
