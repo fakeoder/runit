@@ -98,10 +98,16 @@ public class XmlConfigReader extends ConfigReader {
             Element ea = elements.get(0);
             Element eb = elements.get(1);
             String eaName = ea.getName();
-            if(eaName.equals("key")){
-                context.put(ea.getStringValue(),eb.getStringValue());
-            }else{
-                context.put(eb.getStringValue(),ea.getStringValue());
+            switch (eaName){
+                case "key":
+                    context.put(ea.getStringValue(),eb.getStringValue());
+                    break;
+                case "value":
+                    context.put(eb.getStringValue(),ea.getStringValue());
+                    break;
+                default:
+                    throw new UnsupportedOperationException("no match element:" + eaName);
+
             }
         });
         task.setContext(context);
