@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<task id="TASK-001" name="task template" description="this is a template">
+<task id="TASK-001" name="task template" beginAction="sleepNone" description="this is a template">
     <context>
         <variable>
             <key>profile</key>
@@ -11,7 +11,7 @@
         </variable>
     </context>
     <actions>
-        <action id="sleepNone" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.inst.template.SleepNone">
+        <action id="sleepNone" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.insts.template.SleepNone">
                 <initParameters>
                     <initParameter>
                         <name>during</name>
@@ -22,10 +22,10 @@
                         <expression>${profile}</expression>
                     </initParameter>
                 </initParameters>
-                <timeoutProcessor class="<timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></timeoutProcessor>
-                <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></exceptionProcessor>"></timeoutProcessor>
+                <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></timeoutProcessor>
+                <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></exceptionProcessor>
         </action>
-        <action id="sleepNeat" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.inst.template.SleepNeat">
+        <action id="sleepNeat" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.insts.template.SleepNeat">
             <initParameters>
                 <initParameter>
                     <name>times</name>
@@ -41,7 +41,7 @@
         </action>
     </actions>
     <arranger>
-        <flow id="sleepFlow" from="sleepNone" to="sleepNeat">
+        <flow from="sleepNone" to="sleepNeat">
             <condition expression="${sleepNone.result.next}==1"></condition>
         </flow>
     </arranger>

@@ -4,6 +4,9 @@ import com.fakeoder.runit.core.processor.ExceptionProcessor;
 import com.fakeoder.runit.core.processor.InitDataProcessor;
 import com.fakeoder.runit.core.processor.TimeoutProcessor;
 
+import java.util.Locale;
+import java.util.Map;
+
 /**
  * abstract action define
  * @author zhuo
@@ -15,10 +18,12 @@ public class Action {
      */
     protected String id;
 
+    protected String clazz;
+
     /**
      * params
      */
-    protected String params;
+    protected Map<String,Object> params;
 
     /**
      * action result
@@ -37,6 +42,8 @@ public class Action {
      */
     protected PreCondition preCondition;
 
+    protected String preConditionStr;
+
     /**
      * timeout
      */
@@ -47,15 +54,21 @@ public class Action {
      */
     protected InitDataProcessor initDataProcessor;
 
+    protected InitDataProcessor initDataProcessorClass;
+
     /**
      * what should do when timeout
      */
     protected TimeoutProcessor timeoutProcessor;
 
+    protected String timeoutProcessorClass;
+
     /**
      * what should do when exception appears
      */
     protected ExceptionProcessor exceptionProcessor;
+
+    protected String exceptionProcessorClass;
 
 
 
@@ -65,7 +78,7 @@ public class Action {
      * @throws Exception
      */
     public ActionResult run(){
-        throw new UnsupportedOperationException("not support!");
+        throw new UnsupportedOperationException("not support! no ");
     }
 
     public String getId() {
@@ -76,13 +89,7 @@ public class Action {
         this.id = id;
     }
 
-    public String getParams() {
-        return params;
-    }
 
-    public void setParams(String params) {
-        this.params = params;
-    }
 
     public State getState() {
         return state;
@@ -116,6 +123,14 @@ public class Action {
         this.initDataProcessor = initDataProcessor;
     }
 
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
     public TimeoutProcessor getTimeoutProcessor() {
         return timeoutProcessor;
     }
@@ -138,5 +153,67 @@ public class Action {
 
     public void setActionResult(ActionResult actionResult) {
         this.actionResult = actionResult;
+    }
+
+    public InitDataProcessor getInitDataProcessorClass() {
+        return initDataProcessorClass;
+    }
+
+    public void setInitDataProcessorClass(InitDataProcessor initDataProcessorClass) {
+        this.initDataProcessorClass = initDataProcessorClass;
+    }
+
+    public String getTimeoutProcessorClass() {
+        return timeoutProcessorClass;
+    }
+
+    public void setTimeoutProcessorClass(String timeoutProcessorClass) {
+        this.timeoutProcessorClass = timeoutProcessorClass;
+    }
+
+    public String getExceptionProcessorClass() {
+        return exceptionProcessorClass;
+    }
+
+    public void setExceptionProcessorClass(String exceptionProcessorClass) {
+        this.exceptionProcessorClass = exceptionProcessorClass;
+    }
+
+    public String getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(String clazz) {
+        this.clazz = clazz;
+    }
+
+    public String getPreConditionStr() {
+        return preConditionStr;
+    }
+
+    public void setPreConditionStr(String preConditionStr) {
+        this.preConditionStr = preConditionStr;
+        this.preCondition = PreCondition.valueOf(preConditionStr.toUpperCase(Locale.ROOT));
+    }
+
+    public static Action getActionInstance(String clazz){
+        try {
+            Class cls = Class.forName(clazz.replace(".class",""));
+            return (Action) cls.newInstance();
+        } catch (ClassNotFoundException| IllegalAccessException | InstantiationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setRunningStatus(){
+        this.setState(State.RUNNING);
+    }
+
+    public void setFinishedStatus(){
+        this.setState(State.FINISHED);
+    }
+
+    public void setErrorStatus(){
+        this.setState(State.ERROR);
     }
 }

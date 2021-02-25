@@ -34,9 +34,7 @@ public enum PreCondition {
     ANY(){
         @Override
         public boolean judge(List data, Function2Args wrapper, Object wrapperParam) {
-            return data.stream().anyMatch(dat->{
-                return (boolean) wrapper.apply(wrapperParam,dat);
-            });
+            return data.stream().anyMatch(dat-> (boolean) wrapper.apply(wrapperParam,dat));
         }
     };
 

@@ -1,9 +1,11 @@
 package com.fakeoder.runit.core.conf.insts;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fakeoder.runit.core.action.Action;
+import com.fakeoder.runit.core.arrange.ArrangeMap;
+import com.fakeoder.runit.core.arrange.Arranger;
 import com.fakeoder.runit.core.conf.ConfigReader;
 import com.fakeoder.runit.core.conf.TaskConfig;
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -12,17 +14,14 @@ import org.dom4j.io.SAXReader;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhuo
  */
 public class XmlConfigReader extends ConfigReader {
 
-    private String path;
+    private final String path;
 
     public XmlConfigReader(String path){
         this.path = path;
@@ -34,7 +33,7 @@ public class XmlConfigReader extends ConfigReader {
         final TaskConfig taskConfig = new TaskConfig();
 
         //transform uri from classpath
-        URI uri = XmlConfigReader.class.getClassLoader().getResource(path).toURI();
+        URI uri = Objects.requireNonNull(XmlConfigReader.class.getClassLoader().getResource(path)).toURI();
 
         //1.create Reader object
         SAXReader reader = new SAXReader();
@@ -44,120 +43,97 @@ public class XmlConfigReader extends ConfigReader {
         Element rootElement = document.getRootElement();
 
         //4.fill task attributes
-        fillTaskAttribute(rootElement.attributes(), taskConfig);
+        fillTaskAttribute(rootElement, taskConfig);
 
         //5.subElements
-        List<Element> elementList = rootElement.elements();
+        fillContext(rootElement.element("context"), taskConfig);
+        fillActions(rootElement.element("actions"), taskConfig);
+        fillArrange(rootElement.element("arranger"), taskConfig);
 
-        elementList.stream().forEach(ele->{
-            String name = ele.getName();
-            switch (name){
-                case "context":
-                    fillContext(ele, taskConfig);
-                    break;
-                case "actions":
-                    fillActions(ele, taskConfig);
-                    break;
-                case "arrange":
-                    fillArrange(ele, taskConfig);
-                    break;
-                default:
-                    throw new RuntimeException("no match element: " + name);
-            }
-
-        });
-
-
-        return null;
+        return taskConfig;
     }
 
-    private void fillTaskAttribute(List<Attribute> attributes, TaskConfig task) {
-        attributes.stream().forEach(attr->{
-            String name = attr.getName();
-            String value = attr.getValue();
-            switch (name){
-                case "id":
-                    task.setId(value);
-                    break;
-                case "name":
-                    task.setName(value);
-                    break;
-                case "description":
-                    task.setDescription(value);
-                    break;
-                default:
-                    throw new RuntimeException("invalid attribute: " + name);
-            }
-        });
+    private void fillTaskAttribute(Element element, TaskConfig task) {
+        task.setId(element.attributeValue("id"));
+        task.setName(element.attributeValue("name"));
+        task.setBeginAction(element.attributeValue("beginAction"));
+        task.setDescription(element.attributeValue("description"));
     }
 
     private void fillContext(Element element, TaskConfig task) {
-        final Map<String,String> context = new HashMap<>(32);
-        element.elements().stream().forEach(ele->{
-            List<Element> elements = ele.elements();
-            Element ea = elements.get(0);
-            Element eb = elements.get(1);
-            String eaName = ea.getName();
-            switch (eaName){
-                case "key":
-                    context.put(ea.getStringValue(),eb.getStringValue());
-                    break;
-                case "value":
-                    context.put(eb.getStringValue(),ea.getStringValue());
-                    break;
-                default:
-                    throw new UnsupportedOperationException("no match element:" + eaName);
-
-            }
-        });
+        final Map<String,Object> context = new HashMap<>(32);
+        element.elements().forEach(ele-> context.put(ele.element("key").getStringValue(), ele.element("value").getStringValue()));
         task.setContext(context);
     }
 
     private void fillActions(Element element, TaskConfig taskConfig) {
         final List<Action> actions = new ArrayList<>();
-        element.elements().stream().forEach(ele->{
-            final Action action = new Action();
-            //fill attributes
+        element.elements().forEach(ele->{
+            String actionClass = ele.attributeValue("class");
+            final Action action = Action.getActionInstance(actionClass);
 
-            ele.elements().stream().forEach(e->{
-                //fill init
+            //fill attribute
+            action.setId(ele.attributeValue("id"));
+            action.setPreConditionStr(ele.attributeValue("preCondition"));
+            action.setTimeout(Integer.parseInt(ele.attributeValue("timeout")));
+            action.setClazz(ele.attributeValue("class"));
 
-                //fill timeout processor
+            //fill init
+            fillActionContext(ele.element("initParameters"), action);
 
-                //fill expection processor
+            //fill timeout processor
+            fillActionTimeoutProcessor(ele.element("timeoutProcessor"), action);
 
+            //fill exception processor
+            fillActionExceptionProcessor(ele.element("exceptionProcessor"), action);
 
-            });
             actions.add(action);
-
-
         });
         taskConfig.setActions(actions);
+    }
+
+    private void fillActionContext(Element element, Action action) {
+        Map<String,Object> context = new HashMap<>(32);
+        element.elements().forEach(ele->{
+            context.put(ele.element("name").getStringValue(),ele.element("expression").getStringValue());
+        });
+        action.setParams(context);
+    }
+
+    private void fillActionTimeoutProcessor(Element element, Action action) {
+        action.setExceptionProcessorClass(element.attributeValue("class"));
+    }
+
+    private void fillActionExceptionProcessor(Element element, Action action) {
+        action.setExceptionProcessorClass(element.attributeValue("class"));
     }
 
     private void fillArrange(Element element, TaskConfig taskConfig) {
-        final List<Action> actions = new ArrayList<>();
-        element.elements().stream().forEach(ele->{
-            final Action action = new Action();
-            //fill attributes
+        Arranger arranger = new Arranger();
+        final List<ArrangeMap.Flow> flows = new ArrayList<>();
+        element.elements().forEach(ele->{
+            final ArrangeMap.Flow flow = new ArrangeMap.Flow();
 
-            ele.elements().stream().forEach(e->{
-                //fill init
+            flow.setFrom(ele.attributeValue("from"));
+            flow.setTo(ele.attributeValue("to"));
+            flow.setConditionExpression(ele.element("condition").attributeValue("expression"));
 
-                //fill timeout processor
-
-                //fill expection processor
-
-
-            });
-            actions.add(action);
-
+            flows.add(flow);
 
         });
-        taskConfig.setActions(actions);
+
+        ArrangeMap arrangeMap = new ArrangeMap();
+        arrangeMap.setFlow(flows);
+
+        arranger.setArrangeMap(arrangeMap);
+        taskConfig.setArranger(arranger);
     }
 
-
+    public static void main(String[] args) throws URISyntaxException, DocumentException {
+        XmlConfigReader reader = new XmlConfigReader("task-template.xml");
+        TaskConfig taskConfig = reader.read();
+        System.out.println(JSONObject.toJSONString(taskConfig));
+    }
 
 
 }

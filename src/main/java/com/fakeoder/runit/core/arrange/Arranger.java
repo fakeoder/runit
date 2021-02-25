@@ -11,10 +11,19 @@ import java.util.Map;
  */
 public class Arranger {
 
+    private static final String DELIMITER = "@";
     /**
      * the map to guide how to arrange
      */
     protected ArrangeMap arrangeMap;
+
+    public ArrangeMap getArrangeMap() {
+        return arrangeMap;
+    }
+
+    public void setArrangeMap(ArrangeMap arrangeMap) {
+        this.arrangeMap = arrangeMap;
+    }
 
     /**
      * under the map, judge which action can be run
@@ -41,7 +50,7 @@ public class Arranger {
      * @return
      */
     public ArrangerRule getArrangeRule(String from,String to){
-        String key = String.join(from,to,"-");
+        String key = String.join(DELIMITER,from,to);
         return arrangeMap.getArrangeRuleByKey(key);
     }
 

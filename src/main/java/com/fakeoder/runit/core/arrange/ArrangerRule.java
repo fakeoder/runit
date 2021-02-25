@@ -5,6 +5,12 @@ package com.fakeoder.runit.core.arrange;
  */
 public class ArrangerRule {
 
+    public ArrangerRule(String from, String to, String passCondition){
+        this.from = from;
+        this.to = to;
+        this.passCondition = passCondition;
+    }
+
     private String from;
 
     private String to;

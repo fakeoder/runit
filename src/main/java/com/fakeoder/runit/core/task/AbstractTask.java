@@ -1,4 +1,4 @@
-package com.fakeoder.runit.core.context;
+package com.fakeoder.runit.core.task;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fakeoder.runit.core.action.Action;
@@ -7,6 +7,7 @@ import com.fakeoder.runit.core.action.PreCondition;
 import com.fakeoder.runit.core.action.State;
 import com.fakeoder.runit.core.arrange.Arranger;
 import com.fakeoder.runit.core.arrange.ArrangerRule;
+import com.fakeoder.runit.core.conf.ConfigReader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,39 +19,39 @@ import java.util.concurrent.*;
  * main context, storage system config, middle result and global variables
  * @author zhuo
  */
-public abstract class ApplicationContext {
+public abstract class AbstractTask {
     /**
      * the context
      */
-    private Map<String,Object> context;
+    protected Map<String,Object> context;
 
     /**
      * the beginning action
      */
-    private Action beginAction;
+    protected Action beginAction;
 
     /**
      * actions map, key is action identified, value is action
      */
-    private ConcurrentHashMap<String, Action> actions;
+    protected ConcurrentHashMap<String, Action> actions;
 
     /**
      * arranger
      */
-    private Arranger arranger;
+    protected Arranger arranger;
 
     /**
      * thread pool executor
      */
+    protected ThreadPoolExecutor executor;
 
-    private ConcurrentHashMap<String,Future> runningActions;
+    protected ConcurrentHashMap<String,Future> runningActions;
 
-    private ThreadPoolExecutor executor;
+    protected ConfigReader reader;
 
-    private void init(){
-        executor = new ThreadPoolExecutor(10, 20, 30, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
-
-    }
+    /**
+     */
+    protected abstract void init();
 
     /**
      * start context and start this task
@@ -88,6 +89,7 @@ public abstract class ApplicationContext {
 
             //scheduled call
             Future<ActionResult> future = executor.submit(ExecutorBuilder.builder(action));
+            runningActions.put(action.getId(),future);
             ActionResult result = null;
             try {
                 result = future.get();
@@ -115,10 +117,9 @@ public abstract class ApplicationContext {
         context.put(result.getActionId(), JSONObject.parseObject(result.getResult()));
     }
 
-    public static void start(){
-        ApplicationContext context = new ApplicationContext(){};
-        context.init();
-        context.process("begin");
+    public void start(){
+        init();
+        process(beginAction.getId());
         System.out.println("task run finished!");
     }
 
@@ -141,7 +142,7 @@ public abstract class ApplicationContext {
             }
         }
 
-        return null;
+        return ret;
     }
 
 
@@ -152,7 +153,10 @@ public abstract class ApplicationContext {
      * @return
      */
     protected boolean able2Run(PreCondition condition,String id, List<String> preActionIds){
-        condition.judge(preActionIds,(actions,actionId)->{
+        if(preActionIds.isEmpty()){
+            return true;
+        }
+        return condition.judge(preActionIds,(actions,actionId)->{
             Action action = ((Map<String, Action>)actions).get(actionId);
             if(action.getState().getValue()<State.FINISHED.getValue()){
                 return false;
@@ -160,12 +164,6 @@ public abstract class ApplicationContext {
             //if arrange condition pass
             return arranger.canArrangePass(actionId.toString(),id, context);
         },this.actions);
-
-        return true;
-    }
-
-    public static void main(String[] args) {
-        ApplicationContext.start();
     }
 
     static class ExecutorBuilder implements Callable{
@@ -180,8 +178,16 @@ public abstract class ApplicationContext {
         }
 
         @Override
-        public ActionResult call() throws Exception {
-            return action.run();
+        public ActionResult call() {
+            ActionResult result = new ActionResult(action.getId(),"success");
+            try{
+                action.setRunningStatus();
+                result = action.run();
+                action.setFinishedStatus();
+            }catch (Exception e){
+                action.setErrorStatus();
+            }
+            return result;
         }
     }
 }

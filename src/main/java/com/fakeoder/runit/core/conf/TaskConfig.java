@@ -1,10 +1,13 @@
 package com.fakeoder.runit.core.conf;
 
 import com.fakeoder.runit.core.action.Action;
-import com.fakeoder.runit.core.arrange.ArrangerRule;
+import com.fakeoder.runit.core.arrange.Arranger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author zhuo
@@ -15,13 +18,15 @@ public class TaskConfig {
 
     private String name;
 
+    private String beginAction;
+
     private String description;
 
-    private Map<String,String> context;
+    private Map<String,Object> context;
 
     private List<Action> actions;
 
-    private Map<String, ArrangerRule> arrangerMap;
+    private Arranger arranger;
 
     public String getId() {
         return id;
@@ -39,6 +44,10 @@ public class TaskConfig {
         this.name = name;
     }
 
+    public void setBeginAction(String beginAction) {
+        this.beginAction = beginAction;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -47,11 +56,11 @@ public class TaskConfig {
         this.description = description;
     }
 
-    public Map<String, String> getContext() {
+    public Map<String, Object> getContext() {
         return context;
     }
 
-    public void setContext(Map<String, String> context) {
+    public void setContext(Map<String, Object> context) {
         this.context = context;
     }
 
@@ -63,11 +72,19 @@ public class TaskConfig {
         this.actions = actions;
     }
 
-    public Map<String, ArrangerRule> getArrangerMap() {
-        return arrangerMap;
+    public Arranger getArranger() {
+        return arranger;
     }
 
-    public void setArrangerMap(Map<String, ArrangerRule> arrangerMap) {
-        this.arrangerMap = arrangerMap;
+    public void setArranger(Arranger arranger) {
+        this.arranger = arranger;
+    }
+
+    public String getBeginAction() {
+        return beginAction;
+    }
+
+    public ConcurrentHashMap<String, Action> getActionsAsMap() {
+        return new ConcurrentHashMap<>(this.actions.stream().collect(Collectors.toMap(Action::getId, Function.identity(), (key1, key2)->(key1))));
     }
 }
