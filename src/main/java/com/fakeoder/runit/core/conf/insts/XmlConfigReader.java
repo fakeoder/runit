@@ -87,6 +87,9 @@ public class XmlConfigReader extends ConfigReader {
             //fill exception processor
             fillActionExceptionProcessor(ele.element("exceptionProcessor"), action);
 
+            //fill initData processor
+            fillActionInitDataProcessor(ele.element("initDataProcessor"), action);
+
             actions.add(action);
         });
         taskConfig.setActions(actions);
@@ -101,11 +104,15 @@ public class XmlConfigReader extends ConfigReader {
     }
 
     private void fillActionTimeoutProcessor(Element element, Action action) {
-        action.setExceptionProcessorClass(element.attributeValue("class"));
+        action.setTimeoutProcessorClass(element.attributeValue("class"));
     }
 
     private void fillActionExceptionProcessor(Element element, Action action) {
         action.setExceptionProcessorClass(element.attributeValue("class"));
+    }
+
+    private void fillActionInitDataProcessor(Element element, Action action) {
+        action.setInitDataProcessorClass(element.attributeValue("class"));
     }
 
     private void fillArrange(Element element, TaskConfig taskConfig) {

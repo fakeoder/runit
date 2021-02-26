@@ -23,9 +23,7 @@ public enum PreCondition {
     ALL(){
         @Override
         public boolean judge(List data, Function2Args wrapper, Object wrapperParam) {
-            return data.stream().allMatch(dat->{
-                return (boolean) wrapper.apply(wrapperParam,dat);
-            });
+            return data.stream().allMatch(dat-> (boolean) wrapper.apply(wrapperParam,dat));
         }
     },
     /**

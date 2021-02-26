@@ -3,6 +3,7 @@ package com.fakeoder.runit.core.action;
 import com.fakeoder.runit.core.processor.ExceptionProcessor;
 import com.fakeoder.runit.core.processor.InitDataProcessor;
 import com.fakeoder.runit.core.processor.TimeoutProcessor;
+import org.apache.log4j.Logger;
 
 import java.util.Locale;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
  * @author zhuo
  */
 public class Action {
+    private static final Logger log = Logger.getLogger(Action.class);
 
     /**
      * action id
@@ -54,7 +56,7 @@ public class Action {
      */
     protected InitDataProcessor initDataProcessor;
 
-    protected InitDataProcessor initDataProcessorClass;
+    protected String initDataProcessorClass;
 
     /**
      * what should do when timeout
@@ -156,11 +158,16 @@ public class Action {
     }
 
     public InitDataProcessor getInitDataProcessorClass() {
-        return initDataProcessorClass;
+        return initDataProcessor;
     }
 
-    public void setInitDataProcessorClass(InitDataProcessor initDataProcessorClass) {
+    public void setInitDataProcessorClass(String initDataProcessorClass) {
         this.initDataProcessorClass = initDataProcessorClass;
+        try {
+            this.initDataProcessor = (InitDataProcessor) Class.forName(this.initDataProcessorClass).newInstance();
+        } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
+            log.error(e.toString());
+        }
     }
 
     public String getTimeoutProcessorClass() {
@@ -169,14 +176,24 @@ public class Action {
 
     public void setTimeoutProcessorClass(String timeoutProcessorClass) {
         this.timeoutProcessorClass = timeoutProcessorClass;
+        try {
+            this.timeoutProcessor = (TimeoutProcessor) Class.forName(this.timeoutProcessorClass).newInstance();
+        } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
+            log.error(e.toString());
+        }
     }
 
     public String getExceptionProcessorClass() {
         return exceptionProcessorClass;
     }
 
-    public void setExceptionProcessorClass(String exceptionProcessorClass) {
+    public void setExceptionProcessorClass(String exceptionProcessorClass){
         this.exceptionProcessorClass = exceptionProcessorClass;
+        try {
+            this.exceptionProcessor = (ExceptionProcessor) Class.forName(this.exceptionProcessorClass).newInstance();
+        } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
+            log.error(e.toString());
+        }
     }
 
     public String getClazz() {

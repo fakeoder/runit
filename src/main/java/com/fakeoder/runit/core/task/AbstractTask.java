@@ -93,6 +93,7 @@ public abstract class AbstractTask {
             ActionResult result = null;
             try {
                 result = future.get();
+                runningActions.remove(action.getId());
                 //todo register result
                 register(result);
 
@@ -182,12 +183,19 @@ public abstract class AbstractTask {
             ActionResult result = new ActionResult(action.getId(),"success");
             try{
                 action.setRunningStatus();
+                action.getInitDataProcessor().init();
+                long start = System.nanoTime();
                 result = action.run();
+                if(System.nanoTime()-start>action.getTimeout()*1000000){
+                    action.getTimeoutProcessor().process();
+                }
                 action.setFinishedStatus();
             }catch (Exception e){
+                action.getExceptionProcessor().process(e);
                 action.setErrorStatus();
             }
             return result;
         }
     }
+
 }
