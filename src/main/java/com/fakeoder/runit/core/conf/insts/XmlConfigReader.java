@@ -1,6 +1,5 @@
 package com.fakeoder.runit.core.conf.insts;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fakeoder.runit.core.action.Action;
 import com.fakeoder.runit.core.arrange.ArrangeMap;
 import com.fakeoder.runit.core.arrange.Arranger;
@@ -135,12 +134,4 @@ public class XmlConfigReader extends ConfigReader {
         arranger.setArrangeMap(arrangeMap);
         taskConfig.setArranger(arranger);
     }
-
-    public static void main(String[] args) throws URISyntaxException, DocumentException {
-        XmlConfigReader reader = new XmlConfigReader("task-template.xml");
-        TaskConfig taskConfig = reader.read();
-        System.out.println(JSONObject.toJSONString(taskConfig));
-    }
-
-
 }

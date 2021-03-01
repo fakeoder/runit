@@ -40,6 +40,8 @@ public class XmlTask extends AbstractTask {
         this.arranger = taskConfig.getArranger();
         this.context = taskConfig.getContext();
         this.beginAction = actions.get(taskConfig.getBeginAction());
+        this.setName(taskConfig.getName());
+        this.setDescription(taskConfig.getDescription());
 
     }
 }

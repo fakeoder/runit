@@ -8,6 +8,7 @@ import com.fakeoder.runit.core.action.State;
 import com.fakeoder.runit.core.arrange.Arranger;
 import com.fakeoder.runit.core.arrange.ArrangerRule;
 import com.fakeoder.runit.core.conf.ConfigReader;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,6 +21,28 @@ import java.util.concurrent.*;
  * @author zhuo
  */
 public abstract class AbstractTask {
+    private static final Logger log = Logger.getLogger(AbstractTask.class);
+
+    private String name;
+
+    private String description;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     /**
      * the context
      */
@@ -50,6 +73,7 @@ public abstract class AbstractTask {
     protected ConfigReader reader;
 
     /**
+     * load configs
      */
     protected abstract void init();
 
@@ -57,7 +81,6 @@ public abstract class AbstractTask {
      * start context and start this task
      */
     void process(String id){
-
         Action action;
         if(id==null){
             id = beginAction.getId();
@@ -81,26 +104,25 @@ public abstract class AbstractTask {
                     if(future!=null){
                         future.cancel(true);
                         runningActions.remove(cid);
-                        System.out.println("cancel action success![id="+cid+"]");
+                        log.debug("cancel action success![id="+cid+"]");
                     }
-                    System.out.println("no running action![id="+cid+"]");
+                    log.debug("no running actions!");
                 }
             }
 
             //scheduled call
             Future<ActionResult> future = executor.submit(ExecutorBuilder.builder(action));
             runningActions.put(action.getId(),future);
-            ActionResult result = null;
+            ActionResult result;
             try {
                 result = future.get();
                 runningActions.remove(action.getId());
                 //todo register result
                 register(result);
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error(e.toString());
+                throw new RuntimeException(e);
             }
 
             List<String> actionIds = arranger.getRunnableActionIds(id);
@@ -119,9 +141,12 @@ public abstract class AbstractTask {
     }
 
     public void start(){
+        log.info("init task start:");
         init();
+        log.info("init task successful:" + this.getName() + "("+this.getDescription()+")");
+        log.info("task process start:" + this.getName());
         process(beginAction.getId());
-        System.out.println("task run finished!");
+        log.info("task process end:" + this.getName());
     }
 
     /**
