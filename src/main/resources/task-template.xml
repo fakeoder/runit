@@ -11,7 +11,7 @@
         </variable>
     </context>
     <actions>
-        <action id="sleepNone" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.insts.template.SleepNone">
+        <action id="sleepNone" preCondition="any" timeout="3" class="com.fakeoder.runit.core.action.insts.template.SleepNone">
                 <initParameters>
                     <initParameter>
                         <name>during</name>
@@ -24,9 +24,10 @@
                 </initParameters>
                 <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
                 <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
-                <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor"></initDataProcessor>
+                <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+                <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
         </action>
-        <action id="sleepNeat" preCondition="any" timeout="10" class="com.fakeoder.runit.core.action.insts.template.SleepNeat">
+        <action id="sleepNeat" preCondition="any" timeout="3" class="com.fakeoder.runit.core.action.insts.template.SleepNeat">
             <initParameters>
                 <initParameter>
                     <name>times</name>
@@ -39,12 +40,13 @@
             </initParameters>
             <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
             <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
-            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor"></initDataProcessor>
+            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+            <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
         </action>
     </actions>
     <arranger>
         <flow from="sleepNone" to="sleepNeat">
-            <condition expression="${sleepNone.result.next}==1"></condition>
+            <condition expression="equals(${sleepNone.status},'TIMEOUT')"></condition>
         </flow>
     </arranger>
 </task>

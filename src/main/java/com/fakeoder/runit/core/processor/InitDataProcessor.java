@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 public class InitDataProcessor {
     private static final Logger log = Logger.getLogger(InitDataProcessor.class);
 
+    private String initExpression;
+
     public void init() {
         log.debug("action init");
     }

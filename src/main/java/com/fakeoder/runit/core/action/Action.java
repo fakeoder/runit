@@ -2,6 +2,7 @@ package com.fakeoder.runit.core.action;
 
 import com.fakeoder.runit.core.processor.ExceptionProcessor;
 import com.fakeoder.runit.core.processor.InitDataProcessor;
+import com.fakeoder.runit.core.processor.PostDataProcessor;
 import com.fakeoder.runit.core.processor.TimeoutProcessor;
 import org.apache.log4j.Logger;
 
@@ -72,6 +73,13 @@ public class Action {
 
     protected String exceptionProcessorClass;
 
+
+    /**
+     * required parameters postData processor
+     */
+    protected PostDataProcessor postDataProcessor;
+
+    protected String postDataProcessorClass;
 
 
     /**
@@ -147,6 +155,27 @@ public class Action {
 
     public void setExceptionProcessor(ExceptionProcessor exceptionProcessor) {
         this.exceptionProcessor = exceptionProcessor;
+    }
+
+    public PostDataProcessor getPostDataProcessor() {
+        return postDataProcessor;
+    }
+
+    public void setPostDataProcessor(PostDataProcessor postDataProcessor) {
+        this.postDataProcessor = postDataProcessor;
+    }
+
+    public String getPostDataProcessorClass() {
+        return postDataProcessorClass;
+    }
+
+    public void setPostDataProcessorClass(String postDataProcessorClass) {
+        this.postDataProcessorClass = postDataProcessorClass;
+        try {
+            this.postDataProcessor = (PostDataProcessor) Class.forName(this.postDataProcessorClass).newInstance();
+        } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
+            log.error(e.toString());
+        }
     }
 
     public ActionResult getActionResult() {

@@ -13,6 +13,11 @@ public class SleepNone extends Action {
     @Override
     public ActionResult run() {
         log.debug("SleepNone is running");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return new ActionResult(this.getId(),"{\"result\":{\"next\":\"1\"}}");
     }
 }

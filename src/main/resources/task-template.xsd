@@ -31,8 +31,10 @@
   <xs:complexType name="actionType">
     <xs:sequence>
       <xs:element type="initParametersType" name="initParameters"/>
-      <xs:element type="timeoutProcessorType" name="timeoutProcessor"/>
-      <xs:element type="exceptionProcessorType" name="exceptionProcessor"/>
+      <xs:element type="defaultProcessorType" name="timeoutProcessor"/>
+      <xs:element type="defaultProcessorType" name="exceptionProcessor"/>
+      <xs:element type="DataProcessorType" name="postDataProcessor"/>
+      <xs:element type="DataProcessorType" name="initDataProcessor"/>
     </xs:sequence>
     <xs:attribute type="xs:string" name="id" use="required"/>
     <xs:attribute type="xs:string" name="preCondition" use="required"/>
@@ -53,20 +55,22 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="timeoutProcessorType">
+  <xs:complexType name="defaultProcessorType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="xs:string" name="class" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  <xs:complexType name="exceptionProcessorType">
+  <xs:complexType name="DataProcessorType">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute type="xs:string" name="class" use="required"/>
+        <xs:attribute type="xs:string" name="expression" use="required"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+
 
   <xs:complexType name="arrangerType">
     <xs:sequence>

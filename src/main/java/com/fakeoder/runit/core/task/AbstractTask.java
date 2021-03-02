@@ -48,6 +48,31 @@ public abstract class AbstractTask {
      */
     protected Map<String,Object> context;
 
+
+    public Map<String, Object> getContext() {
+        return context;
+    }
+
+    public void setContext(Map<String, Object> context) {
+        this.context = context;
+    }
+
+    public ConcurrentHashMap<String, Action> getActions() {
+        return actions;
+    }
+
+    public void setActions(ConcurrentHashMap<String, Action> actions) {
+        this.actions = actions;
+    }
+
+    public Arranger getArranger() {
+        return arranger;
+    }
+
+    public void setArranger(Arranger arranger) {
+        this.arranger = arranger;
+    }
+
     /**
      * the beginning action
      */
@@ -137,7 +162,11 @@ public abstract class AbstractTask {
      * @param result
      */
     protected void register(ActionResult result){
-        context.put(result.getActionId(), JSONObject.parseObject(result.getResult()));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.putAll(JSONObject.parseObject(result.getResult()));
+        jsonObject.put("status", result.getStatus());
+        context.put(result.getActionId(), jsonObject);
+
     }
 
     public void start(){
@@ -167,7 +196,6 @@ public abstract class AbstractTask {
                 ret.add(preId);
             }
         }
-
         return ret;
     }
 
@@ -210,14 +238,19 @@ public abstract class AbstractTask {
                 action.setRunningStatus();
                 action.getInitDataProcessor().init();
                 long start = System.nanoTime();
-                result = action.run();
-                if(System.nanoTime()-start>action.getTimeout()*1000000){
+                result = action.getPostDataProcessor().wrapper(action.run());
+                if(System.nanoTime()-start>action.getTimeout()* 1000000L){
+                    result.setTimeout();
                     action.getTimeoutProcessor().process();
+                }else {
+                    result.setSuccess();
                 }
                 action.setFinishedStatus();
             }catch (Exception e){
                 action.getExceptionProcessor().process(e);
                 action.setErrorStatus();
+                result.setFail();
+                result.setResult(e.toString());
             }
             return result;
         }
