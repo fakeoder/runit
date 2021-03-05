@@ -3,8 +3,7 @@ package com.fakeoder.runit.core.task.insts;
 import com.fakeoder.runit.core.conf.TaskConfig;
 import com.fakeoder.runit.core.conf.insts.XmlConfigReader;
 import com.fakeoder.runit.core.task.AbstractTask;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.dom4j.DocumentException;
 
 import java.net.URISyntaxException;
@@ -17,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @author zhuo
  */
 public class XmlTask extends AbstractTask {
-    Logger log = LoggerFactory.getLogger(XmlTask.class);
+    Logger log = Logger.getLogger(XmlTask.class);
     private String path;
 
     public XmlTask(String path){

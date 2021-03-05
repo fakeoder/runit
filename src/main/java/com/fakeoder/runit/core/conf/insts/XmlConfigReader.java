@@ -102,7 +102,7 @@ public class XmlConfigReader extends ConfigReader {
         element.elements().forEach(ele->{
             context.put(ele.element("name").getStringValue(),ele.element("expression").getStringValue());
         });
-        action.setParams(context);
+        action.setContext(context);
     }
 
     private void fillActionTimeoutProcessor(Element element, Action action) {
@@ -114,11 +114,11 @@ public class XmlConfigReader extends ConfigReader {
     }
 
     private void fillActionInitDataProcessor(Element element, Action action) {
-        action.setInitDataProcessorClass(element.attributeValue("class"));
+        action.setInitDataProcessorClass(element.attributeValue("class"), element.attributeValue("expression"));
     }
 
     private void fillActionPostDataProcessor(Element element, Action action) {
-        action.setPostDataProcessorClass(element.attributeValue("class"));
+        action.setPostDataProcessorClass(element.attributeValue("class"),element.attributeValue("expression"));
     }
 
     private void fillArrange(Element element, TaskConfig taskConfig) {

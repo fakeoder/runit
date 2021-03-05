@@ -23,10 +23,10 @@ public class Action {
 
     protected String clazz;
 
-    /**
-     * params
-     */
-    protected Map<String,Object> params;
+    protected Map<String,Object> global;
+
+    protected Map<String,Object> context;
+
 
     /**
      * action result
@@ -99,7 +99,21 @@ public class Action {
         this.id = id;
     }
 
+    public Map<String, Object> getContext() {
+        return context;
+    }
 
+    public void setContext(Map<String, Object> context) {
+        this.context = context;
+    }
+
+    public Map<String, Object> getGlobal() {
+        return global;
+    }
+
+    public void setGlobal(Map<String, Object> global) {
+        this.global = global;
+    }
 
     public State getState() {
         return state;
@@ -133,13 +147,6 @@ public class Action {
         this.initDataProcessor = initDataProcessor;
     }
 
-    public Map<String, Object> getParams() {
-        return params;
-    }
-
-    public void setParams(Map<String, Object> params) {
-        this.params = params;
-    }
 
     public TimeoutProcessor getTimeoutProcessor() {
         return timeoutProcessor;
@@ -169,10 +176,11 @@ public class Action {
         return postDataProcessorClass;
     }
 
-    public void setPostDataProcessorClass(String postDataProcessorClass) {
+    public void setPostDataProcessorClass(String postDataProcessorClass,String expression) {
         this.postDataProcessorClass = postDataProcessorClass;
         try {
             this.postDataProcessor = (PostDataProcessor) Class.forName(this.postDataProcessorClass).newInstance();
+            this.postDataProcessor.setExpression(expression);
         } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
             log.error(e.toString());
         }
@@ -190,10 +198,11 @@ public class Action {
         return initDataProcessor;
     }
 
-    public void setInitDataProcessorClass(String initDataProcessorClass) {
+    public void setInitDataProcessorClass(String initDataProcessorClass, String expression) {
         this.initDataProcessorClass = initDataProcessorClass;
         try {
             this.initDataProcessor = (InitDataProcessor) Class.forName(this.initDataProcessorClass).newInstance();
+            this.initDataProcessor.setInitExpression(expression);
         } catch (InstantiationException|IllegalAccessException|ClassNotFoundException e) {
             log.error(e.toString());
         }
@@ -261,5 +270,12 @@ public class Action {
 
     public void setErrorStatus(){
         this.setState(State.ERROR);
+    }
+
+    public void init() {
+        for(Map.Entry<String,Object> entry : this.global.entrySet()){
+            this.context.putIfAbsent(entry.getKey(),entry.getValue());
+        }
+        this.initDataProcessor.init(context);
     }
 }

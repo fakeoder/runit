@@ -10,10 +10,7 @@ import com.fakeoder.runit.core.arrange.ArrangerRule;
 import com.fakeoder.runit.core.conf.ConfigReader;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -136,7 +133,7 @@ public abstract class AbstractTask {
             }
 
             //scheduled call
-            Future<ActionResult> future = executor.submit(ExecutorBuilder.builder(action));
+            Future<ActionResult> future = executor.submit(ExecutorBuilder.builder(action, context));
             runningActions.put(action.getId(),future);
             ActionResult result;
             try {
@@ -146,7 +143,7 @@ public abstract class AbstractTask {
                 register(result);
 
             } catch (InterruptedException | ExecutionException e) {
-                log.error(e.toString());
+                log.error(JSONObject.toJSONString(e));
                 throw new RuntimeException(e);
             }
 
@@ -163,7 +160,13 @@ public abstract class AbstractTask {
      */
     protected void register(ActionResult result){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.putAll(JSONObject.parseObject(result.getResult()));
+        try {
+            JSONObject resultJson = JSONObject.parseObject(result.getResult());
+            jsonObject.put("result",resultJson);
+        }catch (Exception e){
+            jsonObject.put("result",result.getResult());
+        }
+
         jsonObject.put("status", result.getStatus());
         context.put(result.getActionId(), jsonObject);
 
@@ -222,21 +225,24 @@ public abstract class AbstractTask {
 
     static class ExecutorBuilder implements Callable{
         private Action action;
+        private Map<String,Object> context;
 
-        public static ExecutorBuilder builder(Action action){
-            return new ExecutorBuilder(action);
+        public static ExecutorBuilder builder(Action action, Map<String,Object> context){
+            return new ExecutorBuilder(action, context);
         }
 
-        public ExecutorBuilder(Action action) {
+        public ExecutorBuilder(Action action, Map<String,Object> context) {
             this.action = action;
+            this.context = context;
         }
 
         @Override
         public ActionResult call() {
             ActionResult result = new ActionResult(action.getId(),"success");
             try{
+                action.setGlobal(context);
                 action.setRunningStatus();
-                action.getInitDataProcessor().init();
+                action.init();
                 long start = System.nanoTime();
                 result = action.getPostDataProcessor().wrapper(action.run());
                 if(System.nanoTime()-start>action.getTimeout()* 1000000L){
@@ -250,7 +256,7 @@ public abstract class AbstractTask {
                 action.getExceptionProcessor().process(e);
                 action.setErrorStatus();
                 result.setFail();
-                result.setResult(e.toString());
+                result.setResult(JSONObject.toJSONString(e));
             }
             return result;
         }
