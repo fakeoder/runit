@@ -31,11 +31,15 @@
             <initParameters>
                 <initParameter>
                     <name>url</name>
-                    <expression>https://leetcode-cn.com/</expression>
+                    <expression>https://www.baidu.com/</expression>
                 </initParameter>
                 <initParameter>
                     <name>method</name>
                     <expression>get</expression>
+                </initParameter>
+                <initParameter>
+                    <name>header</name>
+                    <expression>{"Accept":"text/javascript","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}</expression>
                 </initParameter>
             </initParameters>
             <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>

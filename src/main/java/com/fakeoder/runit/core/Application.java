@@ -5,6 +5,9 @@ import com.fakeoder.runit.core.task.AbstractTask;
 import com.fakeoder.runit.core.task.insts.XmlTask;
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 /**
  * @author zhuo
  */
@@ -17,5 +20,7 @@ public class Application {
         log.info("context:"+JSONObject.toJSONString(task.getContext()));
         log.info("actions:"+JSONObject.toJSONString(task.getActions()));
         log.info("arrange:"+JSONObject.toJSONString(task.getArranger()));
+
+        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
     }
 }

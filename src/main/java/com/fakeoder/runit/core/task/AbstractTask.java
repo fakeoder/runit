@@ -179,6 +179,11 @@ public abstract class AbstractTask {
         log.info("task process start:" + this.getName());
         process(beginAction.getId());
         log.info("task process end:" + this.getName());
+        destroy();
+    }
+
+    protected void destroy(){
+        executor.shutdown();
     }
 
     /**
