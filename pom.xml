@@ -12,6 +12,7 @@
         <module>runit-action</module>
         <module>runit-base</module>
         <module>runit-executor</module>
+        <module>runit-web</module>
     </modules>
 
     <properties>

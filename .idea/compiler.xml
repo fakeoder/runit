@@ -8,8 +8,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="runit-action-savetofile" />
         <module name="runit-action-clipboard" />
+        <module name="runit-action-screencapture" />
         <module name="runit-executor" />
         <module name="runit-action-taskrunner" />
+        <module name="runit-web" />
         <module name="runit-base" />
         <module name="runit-action-keylistener" />
         <module name="runit-action-http" />
