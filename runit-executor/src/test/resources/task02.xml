@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<task id="TASK-001" name="task template" beginAction="keyListener" description="this is a template">
+    <context>
+        <variable>
+            <key>profile</key>
+            <value>dev</value>
+        </variable>
+        <variable>
+            <key>timeout</key>
+            <value>10</value>
+        </variable>
+    </context>
+    <actions>
+        <action id="keyListener" preCondition="any" timeout="3" class="com.fakeoder.runit.action.keylistener.KeyListenerAction" isDaemon="true">
+            <initParameters>
+                <initParameter>
+                    <name>keyAndListener</name>
+                    <expression>#{key.control shift P}=${action-instances.taskRunner};${key}</expression>
+                </initParameter>
+            </initParameters>
+            <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
+            <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
+            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+            <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
+        </action>
+        <action id="taskRunner" preCondition="any" timeout="3" class="com.fakeoder.runit.action.taskrunner.TaskRunnerAction" isDaemon="false">
+                <initParameters>
+                    <initParameter>
+                        <name>task-path</name>
+                        <expression>task01.xml</expression>
+                    </initParameter>
+                    <initParameter>
+                        <name>env</name>
+                        <expression>${profile}</expression>
+                    </initParameter>
+                </initParameters>
+                <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
+                <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
+                <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+                <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
+        </action>
+    </actions>
+    <arranger>
+        <flow from="keyListener" to="taskRunner">
+            <condition expression="1==1"></condition>
+        </flow>
+    </arranger>
+</task>

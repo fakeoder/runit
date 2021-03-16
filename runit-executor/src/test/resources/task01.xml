@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<task id="TASK-001" name="task template" beginAction="clipboard" description="this is a template">
+    <context>
+        <variable>
+            <key>profile</key>
+            <value>dev</value>
+        </variable>
+        <variable>
+            <key>timeout</key>
+            <value>10</value>
+        </variable>
+    </context>
+    <actions>
+        <action id="clipboard" preCondition="any" timeout="3" class="com.fakeoder.runit.action.clipboard.ClipboardAction" isDaemon="false">
+            <initParameters>
+                <initParameter>
+                    <name>method</name>
+                    <expression>'GET'</expression>
+                </initParameter>
+            </initParameters>
+            <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
+            <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
+            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+            <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
+        </action>
+        <action id="http" preCondition="any" timeout="3" class="com.fakeoder.runit.action.http.HttpAction" isDaemon="false">
+            <initParameters>
+                <initParameter>
+                    <name>url</name>
+                    <expression>${clipboard.result}</expression>
+                </initParameter>
+                <initParameter>
+                    <name>method</name>
+                    <expression>'GET'</expression>
+                </initParameter>
+            </initParameters>
+            <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
+            <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
+            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression=""></initDataProcessor>
+            <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
+        </action>
+        <action id="saveToFile" preCondition="any" timeout="3" class="com.fakeoder.runit.action.savetofile.SaveToFile" isDaemon="false">
+            <initParameters>
+                <initParameter>
+                    <name>path</name>
+                    <expression>'/mnt/c/Users/joele/Desktop/index.html'</expression>
+                </initParameter>
+            </initParameters>
+            <timeoutProcessor class="com.fakeoder.runit.core.processor.insts.DefaultTimeoutProcessor"></timeoutProcessor>
+            <exceptionProcessor class="com.fakeoder.runit.core.processor.insts.DefaultExceptionProcessor"></exceptionProcessor>
+            <initDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultInitDataProcessor" expression="#{content}===toString(${http.result.response})"></initDataProcessor>
+            <postDataProcessor class="com.fakeoder.runit.core.processor.insts.DefaultPostDataProcessor" expression=""></postDataProcessor>
+        </action>
+    </actions>
+    <arranger>
+        <flow from="clipboard" to="http">
+            <condition expression="1==1"></condition>
+        </flow>
+        <flow from="http" to="saveToFile">
+            <condition expression="1==1"></condition>
+        </flow>
+    </arranger>
+</task>

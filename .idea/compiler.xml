@@ -6,18 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="runnit-base" />
-        <module name="runit-action-listener" />
+        <module name="runit-action-savetofile" />
+        <module name="runit-action-clipboard" />
+        <module name="runit-executor" />
+        <module name="runit-action-taskrunner" />
+        <module name="runit-base" />
+        <module name="runit-action-keylistener" />
+        <module name="runit-action-http" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="runit" target="8" />
-      <module name="runit-action" target="8" />
-      <module name="runit-action-keylistener" target="8" />
-      <module name="runit-action-listener" target="8" />
       <module name="runit-action-listener-windows" target="8" />
       <module name="runnit-action-keyListener" target="8" />
-      <module name="runnit-base" target="8" />
+      <module name="untitled" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
